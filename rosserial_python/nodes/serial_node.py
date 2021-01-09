@@ -44,7 +44,6 @@ import multiprocessing
 import sys
 
 if __name__=="__main__":
-
     rospy.init_node("serial_node")
     rospy.loginfo("ROS Serial Python Node")
 
@@ -71,7 +70,7 @@ if __name__=="__main__":
         rospy.loginfo("Waiting for socket connections on port %d" % tcp_portnum)
         try:
             server.listen()
-        except KeyboardInterrupt:
+        except ROSInterruptException or SystemExit:
             rospy.loginfo("got keyboard interrupt")
         finally:
             rospy.loginfo("Shutting down")
@@ -87,7 +86,7 @@ if __name__=="__main__":
             try:
                 client = SerialClient(port_name, baud, fix_pyserial_for_test=fix_pyserial_for_test)
                 client.run()
-            except KeyboardInterrupt:
+            except ROSInterruptException or SystemExit:
                 break
             except SerialException:
                 sleep(1.0)
@@ -96,8 +95,7 @@ if __name__=="__main__":
                 sleep(1.0)
                 continue
             except:
-                rospy.logwarn("Unexpected Error.%s", sys.exc_info()[0])
+                rospy.logwarn("Unexpected Error: %s", sys.exc_info()[0])
                 client.port.close()
                 sleep(1.0)
                 continue
-
